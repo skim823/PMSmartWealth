@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartWealth Asset Allocator & Retirement Gateway</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        .tab-active { border-bottom-width: 4px; border-color: #b45309; color: #b45309; font-weight: 700; }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans text-slate-800">
+
+    <header class="bg-white shadow-xs border-b border-slate-100 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-5 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-2">
+                <span class="text-2xl font-black tracking-tight text-slate-900">SmartWealth</span>
+                <span id="nav-badge" class="bg-amber-50 text-amber-800 text-xs font-bold px-2.5 py-0.5 rounded-sm border border-amber-200">Planning Blueprint</span>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <p id="nav-desc" class="text-xs text-slate-500 text-center sm:text-right font-medium max-w-xs md:max-w-md">Strategic asset allocation frameworks optimized for long-term compounding and wealth preservation.</p>
+                <div class="inline-flex rounded-lg border border-slate-200 p-1 bg-slate-50">
+                    <button onclick="toggleLanguage('en')" id="lang-en" class="px-3 py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer bg-white text-amber-800 shadow-xs">EN</button>
+                    <button onclick="toggleLanguage('zh')" id="lang-zh" class="px-3 py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer text-slate-500 hover:text-slate-800">中文</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-8">
+        
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+            
+            <div class="bg-white p-6 rounded-2xl shadow-xs border border-slate-100 flex flex-col justify-between">
+                <div>
+                    <h2 id="sec1-title" class="text-xl font-bold mb-4 flex items-center gap-2 text-slate-900">
+                        <span>⚙️</span> 1. Asset Strategy Blueprint
+                    </h2>
+                    
+                    <div class="mb-5">
+                        <label id="lbl-capital" class="block text-sm font-semibold text-slate-700 mb-2">Target Investment Capital (MYR)</label>
+                        <input type="text" id="totalInvestment" value="100,000" class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-600 focus:outline-hidden font-medium text-lg text-slate-900">
+                    </div>
+
+                    <div class="mb-5">
+                        <label id="lbl-model" class="block text-sm font-semibold text-slate-700 mb-2">Select Your Target Allocation Model</label>
+                        <div class="space-y-2.5" id="strategyOptionsContainer">
+                            </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-slate-100">
+                    <div class="flex justify-between items-center mb-3">
+                        <span id="lbl-weights" class="text-sm font-bold uppercase tracking-wider text-slate-400">Target Weights</span>
+                        <span id="selectedStrategyLabel" class="bg-amber-50 text-amber-800 text-xs font-bold px-2 py-1 rounded-sm border border-amber-200">80/20 Framework</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <tbody id="allocationTableBody" class="divide-y divide-slate-100 font-medium text-slate-700">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-xs border border-slate-100 flex flex-col justify-between">
+                <div>
+                    <h2 id="sec2-title" class="text-xl font-bold mb-4 flex items-center gap-2 text-slate-900">
+                        <span>⏳</span> 2. Retirement Path Simulator
+                    </h2>
+                    <p id="sec2-desc" class="text-xs text-slate-500 mb-4">Calculate the required accumulation pace to meet your desired private retirement destination.</p>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label id="lbl-age-now" class="block text-xs font-bold text-slate-500 mb-1 uppercase">Current Age</label>
+                            <input type="number" id="retAgeNow" value="35" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-600 focus:outline-hidden font-medium">
+                        </div>
+                        <div>
+                            <label id="lbl-age-goal" class="block text-xs font-bold text-slate-500 mb-1 uppercase">Target Retirement Age</label>
+                            <input type="number" id="retAgeGoal" value="60" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-600 focus:outline-hidden font-medium">
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label id="lbl-nest-egg" class="block text-xs font-bold text-slate-500 mb-1 uppercase">Target Retirement Nest Egg (MYR)</label>
+                        <input type="text" id="retGoalAmt" value="1,000,000" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-600 focus:outline-hidden font-medium text-slate-900">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mb-5">
+                        <div>
+                            <label id="lbl-curr-save" class="block text-xs font-bold text-slate-500 mb-1 uppercase">Current Invested Capital</label>
+                            <input type="text" id="retCurrentSavings" value="50,000" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-600 focus:outline-hidden font-medium">
+                        </div>
+                        <div>
+                            <label id="lbl-rate" class="block text-xs font-bold text-slate-500 mb-1 uppercase">Assumed Annual Return (%)</label>
+                            <input type="number" id="retExpectedReturn" value="7" step="0.5" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-600 focus:outline-hidden font-medium">
+                        </div>
+                    </div>
+
+                    <button id="btn-run" onclick="calculateRetirementShortfall()" class="w-full bg-slate-900 hover:bg-amber-700 text-white font-bold py-3 px-4 rounded-xl transition-all shadow-xs cursor-pointer tracking-wide uppercase text-sm">
+                        Run Retirement Projection
+                    </button>
+                </div>
+
+                <div class="mt-6 p-5 bg-slate-50 rounded-xl border border-slate-200/60 flex flex-col justify-center items-center text-center">
+                    <p id="retResultHeadline" class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Required Net Contribution Pace</p>
+                    <div id="retMonthlySavingsValue" class="text-3xl font-black text-amber-800 tracking-tight">--</div>
+                    <p id="retResultSubtext" class="text-xs font-medium text-slate-600 mt-2 max-w-sm">Adjust parameters above to instantly calculate your target monthly addition requirement.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-white rounded-2xl shadow-xs border border-slate-100 p-6 mb-12">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-100">
+                <div>
+                    <h2 id="explorer-title" class="text-xl font-bold text-slate-900">🔍 Institutional Fund Explorer</h2>
+                    <p id="explorer-desc" class="text-sm text-slate-500">Curated high-performing growth vehicles. Filtered to highlight core assets structured specifically for dedicated professional UTC planning and portfolio management.</p>
+                </div>
+                <div class="flex gap-2">
+                    <a id="btn-portal" href="https://www.publicmutual.com.my/Home" target="_blank" class="px-4 py-2 text-xs font-bold bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-all flex items-center gap-1">
+                        Public Mutual Web Portal ↗
+                    </a>
+                </div>
+            </div>
+
+            <div class="flex border-b border-slate-200 mb-6 gap-6 text-sm font-medium" id="tabContainer">
+                </div>
+
+            <div id="fundExplorerGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                </div>
+        </section>
+
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            
+            <div class="bg-gradient-to-br from-slate-900 to-slate-800 p-6 rounded-2xl shadow-md text-white border border-slate-950 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 id="epf-title" class="text-lg font-bold text-amber-500 flex items-center gap-2">
+                            <span>📈</span> EPF Members Investment Scheme (EPF-MIS)
+                        </h3>
+                        <span id="epf-badge" class="bg-amber-500/10 text-amber-400 border border-amber-500/30 text-xs font-bold px-2.5 py-0.5 rounded-sm">Akaun Persaraan</span>
+                    </div>
+                    <p id="epf-desc" class="text-sm text-slate-300 mb-5 leading-relaxed">
+                        Qualified members can enhance asset allocation metrics by routing up to <strong>30% of the value exceeding their required Basic Savings</strong> out of their EPF Akaun Persaraan into approved global equity growth vehicles.
+                    </p>
+                </div>
+                <div class="space-y-3 pt-3 border-t border-slate-700/60" id="epf-bullets">
+                    </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-xs border border-slate-200/80 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 id="prs-title" class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                            <span>🛡️</span> Private Retirement Scheme (PRS) Advantages
+                        </h3>
+                        <span id="prs-badge" class="bg-amber-50 text-amber-800 text-xs font-bold px-2.5 py-0.5 rounded-sm border border-amber-200">Tax Advantage</span>
+                    </div>
+                    <p id="prs-desc" class="text-sm text-slate-600 mb-5 leading-relaxed">
+                        A dedicated corporate retirement program providing an independent wealth framework alongside your statutory funds, structured with critical investor protection benefits.
+                    </p>
+                </div>
+                <div class="space-y-3 pt-3 border-t border-slate-100" id="prs-bullets">
+                    </div>
+            </div>
+
+        </section>
+    </main>
+
+    <script {nonce}>
+        // Dictionary mapping values for seamless language shifting (ADVISORY & QQQ NICKNAMES STRICTLY REMOVED)
+        const i18n = {
+            en: {
+                navBadge: 'Planning Blueprint',
+                navDesc: 'Strategic asset allocation frameworks optimized for long-term compounding and wealth preservation.',
+                sec1Title: '<span>⚙️</span> 1. Asset Strategy Blueprint',
+                lblCapital: 'Target Investment Capital (MYR)',
+                lblModel: 'Select Your Target Allocation Model',
+                lblWeights: 'Target Weights',
+                sec2Title: '<span>⏳</span> 2. Retirement Path Simulator',
+                sec2Desc: 'Calculate the required accumulation pace to meet your desired private retirement destination.',
+                lblAgeNow: 'Current Age',
+                lblAgeGoal: 'Target Retirement Age',
+                lblNestEgg: 'Target Retirement Nest Egg (MYR)',
+                lblCurrSave: 'Current Invested Capital',
+                lblRate: 'Assumed Annual Return (%)',
+                btnRun: 'Run Retirement Projection',
+                retHeadline: 'Required Net Contribution Pace',
+                retAchieved: 'Achieved!',
+                retAchievedSub: 'Your current portfolio trajectory is projected to achieve or surpass your designated target nest egg value.',
+                retShortfallSub: 'Required monthly addition over the next {years} years to secure your target nest egg of RM {goal}.',
+                retDefaultSub: 'Adjust parameters above to instantly calculate your target monthly addition requirement.',
+                explorerTitle: '🔍 Institutional Fund Explorer',
+                explorerDesc: 'Curated high-performing growth vehicles. Filtered to highlight core assets structured specifically for dedicated professional UTC planning and portfolio management.',
+                btnPortal: 'Public Mutual Web Portal ↗',
+                btnProfile: 'View Performance Profile ↗',
+                epfTitle: '📈 EPF Members Investment Scheme (EPF-MIS)',
+                epfBadge: 'Akaun Persaraan',
+                epfDesc: 'Qualified members can enhance asset allocation metrics by routing up to <strong>30% of the value exceeding their required Basic Savings</strong> out of their EPF Akaun Persaraan into approved global equity growth vehicles.',
+                prsTitle: '🛡️ Private Retirement Scheme (PRS) Advantages',
+                prsBadge: 'Tax Advantage',
+                prsDesc: 'A dedicated corporate retirement program providing an independent wealth framework alongside your statutory funds, structured with critical investor protection benefits.',
+                
+                types: { equity: 'Global Technology Growth', bond: 'Fixed Income / Bonds', cash: 'Liquid Capital Cash Buffer' },
+                
+                strategies: {
+                    '80/20': { title: '80% Technology Growth / 20% Cash Buffer', desc: 'Aggressive global compounding layout' },
+                    '60/20/20': { title: '60% Tech Growth / 20% Bond Shield / 20% Cash', desc: 'Balanced growth with strategic volatility mitigation' },
+                    '90/10': { title: '90% Tech Beta / 10% Cash Buffer', desc: 'Ultra-Aggressive maximum market-capture layout' },
+                    '70/30': { title: '70% Technology Growth / 30% Cash Buffer', desc: 'Moderate growth structure' }
+                },
+                epfBullets: `<h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider">Strategic Benefits for Local Investors:</h4>
+                    <ul class="space-y-3 text-sm text-slate-200 font-medium">
+                        <li class="flex items-start gap-2.5"><span class="text-amber-500 mt-0.5">✓</span><span><strong>Zero Cash Outlay:</strong> Build global tech exposure without restricting your current monthly household cash flow or liquid safety reserves.</span></li>
+                        <li class="flex items-start gap-2.5"><span class="text-amber-500 mt-0.5">✓</span><span><strong>Capture International Alpha:</strong> Shift a portion of domestic exposure into mega-cap technological drivers (Nvidia, Apple, Microsoft) to maximize compounding potential.</span></li>
+                    </ul>`,
+                prsBullets: `<h4 class="text-xs font-bold text-amber-800 uppercase tracking-wider">Premium Plan Takeaways:</h4>
+                    <ul class="space-y-3 text-sm text-slate-700 font-medium">
+                        <li class="flex items-start gap-2.5"><span class="text-emerald-600 font-bold mt-0.5">✓</span><span><strong>Free Personal Accident (PA) Insurance:</strong> Investors maintaining a minimum PRS net asset value (NAV) of **RM5,000** automatically qualify for complimentary group personal accident coverage (Ages 18 to 59), including accidental death or permanent disablement protections.</span></li>
+                        <li class="flex items-start gap-2.5"><span class="text-emerald-600 font-bold mt-0.5">✓</span><span><strong>RM3,000 Annual Personal Tax Relief:</strong> Claim an immediate individual income tax relief deduction of up to RM3,000 per year, instantly reducing your highest taxable income bracket.</span></li>
+                        <li class="flex items-start gap-2.5"><span class="text-emerald-600 font-bold mt-0.5">✓</span><span><strong>Institutional Privilege Circle:</strong> Contributions pile up toward your Mutual Gold, Elite, or Platinum qualification milestones for added lifestyle rewards.</span></li>
+                    </ul>`
+            },
+            zh: {
+                navBadge: '资产规划蓝图',
+                navDesc: '优化的战略性资产配置框架，旨在实现长期的资本复利增值与财富保值。',
+                sec1Title: '<span>⚙️</span> 1. 资产战略配置蓝图',
+                lblCapital: '目标投资资本金额 (MYR)',
+                lblModel: '选择您的目标资产配置模型',
+                lblWeights: '目标权重配比',
+                sec2Title: '<span>⏳</span> 2. 退休路径模拟计算器',
+                sec2Desc: '精确计算您迈向理想中的私人退休储蓄目标所需的资产积累步调。',
+                lblAgeNow: '当前年龄',
+                lblAgeGoal: '目标退休年龄',
+                lblNestEgg: '预想退休金总量目标 (MYR)',
+                lblCurrSave: '目前已投资资本积累',
+                lblRate: '假定年化收益率 (%)',
+                btnRun: '运行退休前景测算',
+                retHeadline: '每月净投资追赶额度',
+                retAchieved: '已达标!',
+                retAchievedSub: '根据目前的投资轨迹预测，您的资产总量将按期达到甚至超越既定的目标退休金。',
+                retShortfallSub: '为了在接下来的 {years} 年内稳妥锁定 RM {goal} 的退休金总目标，您每月需要额外定投的金额。',
+                retDefaultSub: '调整上述的核心参数，即可为您即时测算出所需填补的每月定投追加数额。',
+                explorerTitle: '🔍 机构基金探索矩阵',
+                explorerDesc: '精心甄选的高增长表现型工具。过滤机制已开启，精准聚焦于专门提供资深信托顾问（UTC）专业规划和资产跟进的高端核心资产链。',
+                btnPortal: 'Public Mutual 官方网站 ↗',
+                btnProfile: '查看走势业绩详情 ↗',
+                epfTitle: '📈 公积金会员投资计划 (EPF-MIS)',
+                epfBadge: '第一户口 Akaun Persaraan',
+                epfDesc: '符合条件的会员可通过将 **超过基本储蓄金（Basic Savings）限额之上的 30% 资产**，从其公积金第一户口（Akaun Persaraan）转出并配置到核准的全球股票型增长信托中。',
+                prsTitle: '🛡️ 私人退休计划 (PRS) 战略优势',
+                prsBadge: '税务优化红利',
+                prsDesc: '专为高净值人士打造的专属独立退休金储蓄赛道，提供独立于法定公积金之外的创富架构，并附带完善的投资者保障权益。',
+                
+                types: { equity: '全球科技型资产 (海外大盘增长)', bond: '固定收益 / 债券盾牌', cash: '流动资本现金缓冲' },
+                
+                strategies: {
+                    '80/20': { title: '80% 全球科技增长 / 20% 现金缓冲', desc: '积极型全球科技复利驱动布局' },
+                    '60/20/20': { title: '60% 全球科技增长 / 20% 债券盾牌 / 20% 现金', desc: '平衡型增长，兼顾缓解市场波动率' },
+                    '90/10': { title: '90% 全球科技增长 / 10% 现金缓冲', desc: '超级激进型，旨在最大化捕获市场涨幅' },
+                    '70/30': { title: '70% 全球科技增长 / 30% 现金缓冲', desc: '稳健稳步增长结构布局' }
+                },
+                epfBullets: `<h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider">本地投资者战略核心利益：</h4>
+                    <ul class="space-y-3 text-sm text-slate-200 font-medium">
+                        <li class="flex items-start gap-2.5"><span class="text-amber-500 mt-0.5">✓</span><span><strong>无需额外掏出现金:</strong> 轻松构建全球顶尖科技股敞口，绝不占用或限制您目前的每月家庭现金流或紧急备用金。</span></li>
+                        <li class="flex items-start gap-2.5"><span class="text-amber-500 mt-0.5">✓</span><span><strong>精准捕获国际超额收益:</strong> 将一部分本土资产转向全球科技巨头（英伟达、苹果、微软），充分拉升长线复利的雪球空间。</span></li>
+                    </ul>`,
+                prsBullets: `<h4 class="text-xs font-bold text-amber-800 uppercase tracking-wider">专属财富计划核心红利：</h4>
+                    <ul class="space-y-3 text-sm text-slate-700 font-medium">
+                        <li class="flex items-start gap-2.5"><span class="text-emerald-600 font-bold mt-0.5">✓</span><span><strong>免费个人意外（PA）保险权益:</strong> 凡维持 PRS 净资产值（NAV）不少于 **RM5,000** 的投资者（年龄在 18 至 59 岁之间），将自动享有全额赞助的团体个人意外保障，涵盖意外身故或永久残疾的理赔防御。</span></li>
+                        <li class="flex items-start gap-2.5"><span class="text-emerald-600 font-bold mt-0.5">✓</span><span><strong>每年最高 RM3,000 个人税务减免:</strong> 每年可直接申报个人所得税免税扣除，减免额度最高达 RM3,000，立竿见影地降低您的边际税率阶梯。</span></li>
+                        <li class="flex items-start gap-2.5"><span class="text-emerald-600 font-bold mt-0.5">✓</span><span><strong>尊享机构金牌俱乐部圈层:</strong> 您的投资累计积分会直接计入您的 Mutual Gold、Elite 或 Platinum 晋升考核里程碑，解锁更多优厚生活礼遇。</span></li>
+                    </ul>`
+            }
+        };
+
+        const strategiesWeights = {
+            '80/20': [{ key: 'equity', weight: 0.80, color: 'text-slate-900' }, { key: 'cash', weight: 0.20, color: 'text-amber-700' }],
+            '60/20/20': [{ key: 'equity', weight: 0.60, color: 'text-slate-900' }, { key: 'bond', weight: 0.20, color: 'text-slate-600' }, { key: 'cash', weight: 0.20, color: 'text-amber-700' }],
+            '90/10': [{ key: 'equity', weight: 0.90, color: 'text-slate-900' }, { key: 'cash', weight: 0.10, color: 'text-amber-700' }],
+            '70/30': [{ key: 'equity', weight: 0.70, color: 'text-slate-900' }, { key: 'cash', weight: 0.30, color: 'text-amber-700' }]
+        };
+
+        const fundsData = {
+            equity: [
+                { name: 'Public Global Select Fund', enFocus: 'US tech giants & dominant global leaders.', zhFocus: '聚焦美国及全球高护城河科技赛道的顶奢级别领头羊企业。' },
+                { name: 'Public e-Artificial Intelligence Technology Fund', enFocus: 'Pure semiconductor infrastructure, hardware innovators, and cloud computing engines.', zhFocus: '纯正的半导体基建、算力硬件革新者及云端算力核心产业链。' },
+                { name: 'Public Lifestyle & Technology Fund', enFocus: 'Global digital consumption megatrends and software enterprise leaders.', zhFocus: '横跨全球数字流媒体消费大趋势与企业级高频软件服务提供商。' },
+                { name: 'Public China Select Fund', enFocus: 'Greater China structural diversification (Tencent, Alibaba digital ecosystems).', zhFocus: '大中华地区结构性多元化防御配比（覆盖腾讯、阿里等数字化生态核心群）。' }
+            ],
+            bond: [
+                { name: 'Public Bond Fund', enFocus: 'High-credit rating conventional Malaysian corporate bonds & government securities.', zhFocus: '精选高信用评级的马来西亚本土高等级企业债券及国家主权固定收益工具。' },
+                { name: 'Public Income Fund', enFocus: 'Fixed-income distribution vehicle prioritizing capital preservation metrics.', zhFocus: '以高度安全性、资本稳健留存为最高考核维度的优质派息固收工具。' }
+            ],
+            cash: [
+                { name: 'Public e-Cash Deposit Fund', enFocus: 'Conventional money market instruments featuring high liquidity and rapid T+1 withdrawal cycles.', zhFocus: '传统的货币市场核心工具，具备卓越的资金避险属性及极速 T+1 赎回到账流动性。' }
+            ]
+        };
+
+        let currentLang = 'en';
+        let currentActiveTab = 'equity';
+
+        function getRawNumber(elementId) {
+            const val = document.getElementById(elementId).value;
+            return parseFloat(val.replace(/,/g, '')) || 0;
+        }
+
+        function formatNumberWithCommas(value) {
+            let clean = value.replace(/[^0-9]/g, '');
+            if (clean === '') return '';
+            return parseInt(clean, 10).toLocaleString('en-US');
+        }
+
+        function registerCommaFormatter(elementId, callback) {
+            const input = document.getElementById(elementId);
+            input.addEventListener('input', function(e) {
+                let cursorPosition = e.target.selectionStart;
+                let originalLength = e.target.value.length;
+                
+                let formatted = formatNumberWithCommas(e.target.value);
+                e.target.value = formatted;
+                
+                let newLength = formatted.length;
+                cursorPosition = cursorPosition + (newLength - originalLength);
+                e.target.setSelectionRange(cursorPosition, cursorPosition);
+                
+                if(callback) callback();
+            });
+        }
+
+        function toggleLanguage(lang) {
+            currentLang = lang;
+            
+            if (lang === 'en') {
+                document.getElementById('lang-en').className = "px-3 py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer bg-white text-amber-800 shadow-xs";
+                document.getElementById('lang-zh').className = "px-3 py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer text-slate-500 hover:text-slate-800";
+            } else {
+                document.getElementById('lang-zh').className = "px-3 py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer bg-white text-amber-800 shadow-xs";
+                document.getElementById('lang-en').className = "px-3 py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer text-slate-500 hover:text-slate-800";
+            }
+
+            const dict = i18n[lang];
+            document.getElementById('nav-badge').innerText = dict.navBadge;
+            document.getElementById('nav-desc').innerText = dict.navDesc;
+            document.getElementById('sec1-title').innerHTML = dict.sec1Title;
+            document.getElementById('lbl-capital').innerText = dict.lblCapital;
+            document.getElementById('lbl-model').innerText = dict.lblModel;
+            document.getElementById('lbl-weights').innerText = dict.lblWeights;
+            document.getElementById('sec2-title').innerHTML = dict.sec2Title;
+            document.getElementById('sec2-desc').innerText = dict.sec2Desc;
+            document.getElementById('lbl-age-now').innerText = dict.lblAgeNow;
+            document.getElementById('lbl-age-goal').innerText = dict.lblAgeGoal;
+            document.getElementById('lbl-nest-egg').innerText = dict.lblNestEgg;
+            document.getElementById('lbl-curr-save').innerText = dict.lblCurrSave;
+            document.getElementById('lbl-rate').innerText = dict.lblRate;
+            document.getElementById('btn-run').innerText = dict.btnRun;
+            document.getElementById('explorer-title').innerText = dict.explorerTitle;
+            document.getElementById('explorer-desc').innerText = dict.explorerDesc;
+            document.getElementById('btn-portal').innerText = dict.btnPortal;
+            document.getElementById('epf-title').innerHTML = dict.epfTitle;
+            document.getElementById('epf-badge').innerText = dict.epfBadge;
+            document.getElementById('epf-desc').innerHTML = dict.epfDesc;
+            document.getElementById('prs-title').innerHTML = dict.prsTitle;
+            document.getElementById('prs-badge').innerText = dict.prsBadge;
+            document.getElementById('prs-desc').innerText = dict.prsDesc;
+            document.getElementById('epf-bullets').innerHTML = dict.epfBullets;
+            document.getElementById('prs-bullets').innerHTML = dict.prsBullets;
+
+            renderStrategyOptions();
+            calculateAssetWeights();
+            calculateRetirementShortfall();
+            renderTabs();
+            renderExplorerGrid();
+        }
+
+        function renderStrategyOptions() {
+            const container = document.getElementById('strategyOptionsContainer');
+            const checkedRadio = document.querySelector('input[name="strategy"]:checked');
+            const currentSelected = checkedRadio ? checkedRadio.value : '80/20';
+
+            container.innerHTML = '';
+            const dict = i18n[currentLang];
+
+            Object.keys(dict.strategies).forEach((key) => {
+                const checked = key === currentSelected ? 'checked' : '';
+                const item = dict.strategies[key];
+                container.innerHTML += `
+                    <label class="flex items-center p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-all">
+                        <input type="radio" name="strategy" value="${key}" ${checked} onchange="calculateAssetWeights()" class="w-4 h-4 text-amber-700 focus:ring-amber-600">
+                        <span class="ml-3 text-sm font-medium">${item.title} <span class="block text-xs font-normal text-slate-500">${item.desc}</span></span>
+                    </label>
+                `;
+            });
+        }
+
+        function renderTabs() {
+            const container = document.getElementById('tabContainer');
+            container.innerHTML = '';
+            const labels = i18n[currentLang].types;
+
+            Object.keys(labels).forEach(key => {
+                const activeClass = key === currentActiveTab ? 'tab-active' : 'text-slate-500 hover:text-slate-800';
+                container.innerHTML += `
+                    <button onclick="switchFundTab('${key}')" id="tab-${key}" class="pb-3 ${activeClass} transition-all cursor-pointer">${labels[key]}</button>
+                `;
+            });
+        }
+
+        // Output weights logic mapping strictly updated labels
+        function calculateAssetWeights() {
+            const capitalValue = getRawNumber('totalInvestment');
+            const checkedRadio = document.querySelector('input[name="strategy"]:checked');
+            const chosenStrategyKey = checkedRadio ? checkedRadio.value : '80/20';
+            const items = strategiesWeights[chosenStrategyKey];
+            
+            document.getElementById('selectedStrategyLabel').innerText = `${chosenStrategyKey} ${currentLang === 'en' ? 'Framework' : '配置框架'}`;
+            
+            const tbody = document.getElementById('allocationTableBody');
+            tbody.innerHTML = '';
+
+            items.forEach(item => {
+                const calculatedValue = capitalValue * item.weight;
+                const percentageDisplay = (item.weight * 100) + '%';
+                const localizedType = i18n[currentLang].types[item.key];
+                
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="py-3.5 font-bold text-slate-800">${localizedType}</td>
+                        <td class="py-3.5 text-center font-bold ${item.color}">${percentageDisplay}</td>
+                        <td class="py-3.5 text-right font-black text-slate-900">RM ${calculatedValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function calculateRetirementShortfall() {
+            const ageNow = parseInt(document.getElementById('retAgeNow').value) || 35;
+            const ageGoal = parseInt(document.getElementById('retAgeGoal').value) || 60;
+            const goalAmt = getRawNumber('retGoalAmt');
+            const savings = getRawNumber('retCurrentSavings');
+            const annualRate = (parseFloat(document.getElementById('retExpectedReturn').value) || 7) / 100;
+
+            const investmentYears = ageGoal - ageNow;
+            if (investmentYears <= 0) {
+                alert(currentLang === 'en' ? "Target retirement age must exceed your current age." : "预想退休年龄必须大于您当下的年龄。");
+                return;
+            }
+
+            const futureValueCurrentAssets = savings * Math.pow(1 + annualRate, investmentYears);
+            const netCapitalShortfall = goalAmt - futureValueCurrentAssets;
+
+            const displayValueBox = document.getElementById('retMonthlySavingsValue');
+            const displaySubtext = document.getElementById('retResultSubtext');
+            const dict = i18n[currentLang];
+
+            document.getElementById('retResultHeadline').innerText = dict.retHeadline;
+
+            if (netCapitalShortfall <= 0) {
+                displayValueBox.innerText = dict.retAchieved;
+                displayValueBox.className = "text-3xl font-black text-emerald-700 tracking-tight";
+                displaySubtext.innerText = dict.retAchievedSub;
+                return;
+            }
+
+            const annualPaymentRequired = netCapitalShortfall * (annualRate / (Math.pow(1 + annualRate, investmentYears) - 1));
+            const monthlyPaymentRequired = annualPaymentRequired / 12;
+
+            displayValueBox.innerText = "RM " + Math.round(monthlyPaymentRequired).toLocaleString('en-US');
+            displayValueBox.className = "text-3xl font-black text-amber-800 tracking-tight";
+            
+            displaySubtext.innerText = dict.retShortfallSub.replace('{years}', investmentYears).replace('{goal}', goalAmt.toLocaleString('en-US'));
+        }
+
+        function switchFundTab(tabKey) {
+            currentActiveTab = tabKey;
+            renderTabs();
+            renderExplorerGrid();
+        }
+
+        function renderExplorerGrid() {
+            const grid = document.getElementById('fundExplorerGrid');
+            grid.innerHTML = '';
+            
+            const targetedFundsList = fundsData[currentActiveTab];
+            const dict = i18n[currentLang];
+            
+            targetedFundsList.forEach(fund => {
+                const localizedFocus = currentLang === 'en' ? fund.enFocus : fund.zhFocus;
+                grid.innerHTML += `
+                    <div class="p-5 bg-white border border-slate-200 rounded-xl hover:border-amber-600 hover:bg-slate-50/50 transition-all flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <h4 class="font-bold text-slate-900 text-base">${fund.name}</h4>
+                            </div>
+                            <p class="text-xs text-slate-500 font-medium leading-relaxed">${localizedFocus}</p>
+                        </div>
+                        <div class="flex gap-2 pt-3 border-t border-slate-100 mt-4">
+                            <a href="https://www.publicmutual.com.my/Home" target="_blank" class="w-full text-center py-2 bg-slate-50 hover:bg-slate-900 hover:text-white text-slate-700 font-bold text-xs rounded-lg transition-all">
+                                ${dict.btnProfile}
+                            </a>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        registerCommaFormatter('totalInvestment', calculateAssetWeights);
+        registerCommaFormatter('retGoalAmt');
+        registerCommaFormatter('retCurrentSavings');
+
+        document.getElementById('retAgeNow').addEventListener('input', calculateRetirementShortfall);
+        document.getElementById('retAgeGoal').addEventListener('input', calculateRetirementShortfall);
+        document.getElementById('retExpectedReturn').addEventListener('input', calculateRetirementShortfall);
+
+        toggleLanguage('en');
+    </script>
+</body>
+</html>
